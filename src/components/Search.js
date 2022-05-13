@@ -5,8 +5,6 @@ const Search = () => {
     const [term, setTerm] = useState('')
     const [results, setResults] = useState([])
 
-   console.log(results)
-
     useEffect(() =>{
         const search = async () => {
            const{data} = await axios.get('https://en.wikipedia.org/w/api.php', {
@@ -20,12 +18,25 @@ const Search = () => {
             })
           setResults(data.query.search);
         };
-
-
         
-        if(term){
-          search();
+        //We make use of the if/else statement to stop the delay from setTimeout on the initial render
+        if(term && !results.length){
+            search();
+        } else {
+
+            //setTimeout is used to delay the api request
+        const timeOutId = setTimeout(() => {
+            if(term){
+                search();
+            }
+        }, 1000)
+        // We use the cleanup function to cancel the api request each time the use types
+        return () => {
+            clearTimeout(timeOutId)
         }
+        }
+        
+
         
     }, [term])
 
